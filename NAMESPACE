@@ -1,0 +1,3 @@
+exportPattern("^[[:alpha:]]+")
+importFrom("stats","cor","quantile","rnorm","var")
+importFrom("graphics", "abline", "legend", "lines", "par", "points")
