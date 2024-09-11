@@ -1,26 +1,58 @@
+#' Haplotype Generation for Genitors
+#'
+#' This function generates haplotypes for a specified genitor from a VCF window.
+#'
+#' @param vcf_window A matrix representing the VCF data for a given window.
+#' @param genitor_id The ID of the genitor for which haplotypes are generated.
+#' 
+#' @return A vector of haplotypes for the specified genitor.
 haplotyping_genitor = function(vcf_window, genitor_id) {
   haps = sapply(vcf_window[genitor_id,],function(cell)strsplit(cell,"|")[[1]][c(1,3)])
   apply(haps,1,function(cell)Reduce(paste0,cell))
 }
 
-#Function to convert vcf window into an array of haplotypic sequences , ( 2 for each individual)
+#' Convert VCF Window to Haplotype Sequences
+#'
+#' This function converts a VCF window into an array of haplotypic sequences, two for each individual.
+#'
+#' @param vcf_window A matrix representing the VCF data for a given window.
+#' 
+#' @return A matrix of haplotypic sequences for each individual in the VCF window.
 haplotyping = function(vcf_window) {
   haps = apply(vcf_window,c(1,2),function(cell)strsplit(cell,"|")[[1]][c(1,3)])
   apply(haps,c(1,2),function(cell)Reduce(paste0,cell))
 }
 
-# Function to convert haplotype names to vectors of characters
+#' Convert Haplotype Names to Character Vectors
+#'
+#' This function converts haplotype names into vectors of characters.
+#'
+#' @param haps_names A vector of haplotype names.
+#' 
+#' @return A list of character vectors representing the haplotype sequences.
 as_vector_list = function(haps_names) {
   lapply(haps_names, function(hap) strsplit(hap, "")[[1]])
 }
 
-# Function to convert a vcf_window into the table of the haplotypic sequences with their occurences
+#' Generate Haplotype Table from VCF Window
+#'
+#' This function generates a table of haplotypic sequences and their occurrences from a VCF window.
+#'
+#' @param vcf_window A matrix representing the VCF data for a given window.
+#' 
+#' @return A sorted table of haplotypic sequences and their frequencies.
 get_haps_table = function(vcf_window) {
   haps = haplotyping(vcf_window)
   sort(table(haps),decreasing=TRUE)
 }
 
-# Function to get the distance matrix between haplotypes from the table of haps
+#' Compute Distance Matrix Between Haplotypes
+#'
+#' This function computes a distance matrix between haplotypes based on the table of haplotypic sequences.
+#'
+#' @param haps_table A table of haplotypic sequences.
+#' 
+#' @return A matrix representing the pairwise distances between haplotypes.
 get_distance_matrix_haps = function(haps_table) {
   vector_list = as_vector_list(names(haps_table))
   n = length(vector_list)
@@ -33,7 +65,14 @@ get_distance_matrix_haps = function(haps_table) {
   mat
 }
 
-# Function to compute distance matrix between parents and children haplotypes
+#' Compute Distance Matrix Between Parent and Child Haplotypes
+#'
+#' This function computes a distance matrix between parent and child haplotypes.
+#'
+#' @param genitor_haps_vector_list A list of character vectors representing the haplotypes of the parents.
+#' @param children_hap_vector_list A list of character vectors representing the haplotypes of the children.
+#' 
+#' @return A matrix representing the distances between parent and child haplotypes.
 parents_children_distance_matrix = function(genitor_haps_vector_list, children_hap_vector_list) {
   n = length(genitor_haps_vector_list)
   p = length(children_hap_vector_list)
@@ -46,7 +85,15 @@ parents_children_distance_matrix = function(genitor_haps_vector_list, children_h
   mat
 }
 
-
+#' Classify Haplotypes Based on Crossbreeding Table
+#'
+#' This function classifies haplotypes of children based on a crossbreeding table and VCF window.
+#'
+#' @param vcf_window A matrix representing the VCF data for a given window.
+#' @param table_croisement A table representing the crossbreeding relationships.
+#' @param phenot A dataframe containing phenotype data, including parent information.
+#' 
+#' @return A list containing classified haplotypes for children, and haplotypes for Y, L, and D genitors.
 classify_haps <- function(vcf_window, table_croisement,phenot) {
   Y_mother_id = colnames(table_croisement)[4]
   L_mother_id = colnames(table_croisement)[1:3]
@@ -82,7 +129,18 @@ classify_haps <- function(vcf_window, table_croisement,phenot) {
   D_haps = haplotyping(vcf_window[D_father_id,])
   list(classified_children_haps=classified_children_haps,Y_haps=Y_haps,L_haps=L_haps,D_haps=D_haps)
 }
-
+         
+#' Simulate QTL Effects on Haplotypes
+#'
+#' This function simulates the effects of quantitative trait loci (QTL) on haplotypes.
+#'
+#' @param n_qtl Number of QTLs to simulate.
+#' @param phenot A dataframe containing phenotype data.
+#' @param chr_vcf_list A list of VCF matrices for different chromosomes.
+#' @param total_effect_size The total effect size to distribute among the QTLs.
+#' @param radii A list of radii to use when simulating QTL effects.
+#' 
+#' @return A list containing simulated QTL effects and haplotype classifications.
 haplo_qtl_generation = function(n_qtl,phenot,chr_vcf_list,total_effect_size=1,radii=list(15)) {
   table_croisement = table(phenot$PERE,phenot$MERE)
   effect_size = rep(1,n_qtl)
