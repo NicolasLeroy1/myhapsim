@@ -183,6 +183,16 @@ haplo_qtl_generation = function(n_qtl,phenot,chr_vcf_list,total_effect_size=1,ra
   })
 }
 
+#' Second QTL Generation Function
+#'
+#' This function generates quantitative trait loci (QTL) effects for haplotypes, considering multiple genitors and SNP effects.
+#'
+#' @param phenot A dataframe containing phenotype data.
+#' @param chr_vcf_list A list of VCF matrices for different chromosomes.
+#' @param total_effect_size The total effect size to distribute among the QTLs. Defaults to 1.
+#' @param radii A list of radii to use when simulating QTL effects. Defaults to list(15).
+#'
+#' @return A list of results for each QTL, including chromosome, position, radius, haplotypes, and effect sizes.
 second_haplo_qtl_generation = function(phenot,chr_vcf_list,total_effect_size=1,radii=list(15)) {
   table_croisement = table(phenot$PERE,phenot$MERE)
   effect_size = lapply(c("Y","L","D","SNP"),function(genitor){
@@ -245,7 +255,18 @@ second_haplo_qtl_generation = function(phenot,chr_vcf_list,total_effect_size=1,r
   })
 }
 
-
+#' Third QTL Generation Function with Chromosome Selection
+#'
+#' This function generates QTL effects for haplotypes, allowing for the selection of a subset of chromosomes.
+#'
+#' @param n_qtl Number of QTLs to simulate.
+#' @param phenot A dataframe containing phenotype data.
+#' @param chr_vcf_list A list of VCF matrices for different chromosomes.
+#' @param n_chr Number of chromosomes to sample for QTL generation.
+#' @param total_effect_size The total effect size to distribute among the QTLs. Defaults to 1.
+#' @param radii A list of radii to use when simulating QTL effects. Defaults to list(15).
+#'
+#' @return A list of results for each QTL, including chromosome, position, radius, haplotypes, and effect sizes.
 third_haplo_qtl_generation = function(n_qtl,phenot,chr_vcf_list,n_chr,total_effect_size=1,radii=list(15)) {
   table_croisement = table(phenot$PERE,phenot$MERE)
   effect_size = rep(1,n_qtl)
@@ -289,6 +310,24 @@ third_haplo_qtl_generation = function(n_qtl,phenot,chr_vcf_list,n_chr,total_effe
   })
 }
 
+#' Simulation Function for Predicting QTL Effects
+#'
+#' This function simulates multiple scenarios of QTL effects, applying specified methods and generating results for different signal-to-noise ratios.
+#'
+#' @param methods A vector of methods to apply for prediction.
+#' @param sim_method The simulation method to use for generating similarity matrices.
+#' @param matrix_interval The interval size for cutting SNP matrices.
+#' @param signal_sizes A vector of signal sizes to use for simulations.
+#' @param n_qtl Number of QTLs to simulate.
+#' @param n_sample Number of samples to generate.
+#' @param svd_inertias A vector of singular value decomposition (SVD) inertias to use for generating similarity matrices.
+#' @param chr_list A list of chromosome data.
+#' @param chr_vcf_list A list of VCF matrices for different chromosomes.
+#' @param phenot A dataframe containing phenotype data.
+#' @param position_list A list of positions to use for cutting SNP matrices.
+#' @param radii A list of radii to use when simulating QTL effects. Defaults to list(15).
+#'
+#' @return A list containing the simulation results, including predictions for different methods and signal sizes, and the corresponding QTL effects.
 simulation_function = function(methods,sim_method,matrix_interval,signal_sizes,n_qtl,n_sample,svd_inertias,chr_list,chr_vcf_list,phenot,position_list,radii=list(15)) {
   X_list = lmrbay::cut_snp_matrices(chr_list,position_list,interval=matrix_interval,keep_position=TRUE)
   matrix_position_list = X_list$position_list
