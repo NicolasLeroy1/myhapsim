@@ -370,15 +370,14 @@ simulation_function = function(methods,sim_method,matrix_interval,signal_sizes,n
   return(list(samples=samples,position_list=position_list,matrix_position_list=matrix_position_list,chr_start=chr_start))
 }
 
-#' Second Simulation Function with Enhanced QTL Generation
+#' Second Simulation Function 
 #'
-#' This function simulates multiple scenarios of QTL effects, using an enhanced QTL generation method and applying specified prediction methods.
+#' This function simulates multiple scenarios of QTL effects with same number of qtl for each origin.
 #'
 #' @param methods A vector of methods to apply for prediction.
 #' @param sim_method The simulation method to use for generating similarity matrices.
 #' @param matrix_interval The interval size for cutting SNP matrices.
 #' @param signal_sizes A vector of signal sizes to use for simulations.
-#' @param n_qtl Number of QTLs to simulate.
 #' @param n_sample Number of samples to generate.
 #' @param svd_inertias A vector of singular value decomposition (SVD) inertias to use for generating similarity matrices.
 #' @param chr_list A list of chromosome data.
@@ -387,7 +386,7 @@ simulation_function = function(methods,sim_method,matrix_interval,signal_sizes,n
 #' @param position_list A list of positions to use for cutting SNP matrices.
 #'
 #' @return A list containing the simulation results, including predictions for different methods and signal sizes, and the corresponding QTL effects.
-second_simulation_function = function(methods,sim_method,matrix_interval,signal_sizes,n_qtl,n_sample,svd_inertias,chr_list,chr_vcf_list,phenot,position_list) {
+second_simulation_function = function(methods,sim_method,matrix_interval,signal_sizes,n_sample,svd_inertias,chr_list,chr_vcf_list,phenot,position_list) {
   X_list = lmrbay::cut_snp_matrices(chr_list,position_list,interval=matrix_interval,keep_position=TRUE)
   matrix_position_list = X_list$position_list
   X_list = X_list$X_list
